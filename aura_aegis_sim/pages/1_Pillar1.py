@@ -304,34 +304,7 @@ st.info("**Pillar 1** is the central intelligence hub. "
         "It reads health signals from Pillar 2 (bad block events) and Pillar 3 (ECC corrections), "
         "then issues commands back: retire a block early, or raise the LDPC correction ceiling.")
 
-# ─── Command panels ───────────────────────────────────────────────────────────
-col_cmd1, col_cmd2 = st.columns(2)
-with col_cmd1:
-    with st.container(border=True):
-        st.markdown("**🔄 LSTM → Pillar 2 Command**")
-        st.markdown("""
-```
-Block 44 P/E trajectory → failure in 8 days
-→ Phase D triggered on Block 44
-→ Data copied to Block 58
-→ Bitmap bit 44 set → BBT persisted
-Result: Block 44 retired 8 days before failure
-```
-""")
-with col_cmd2:
-    with st.container(border=True):
-        st.markdown("**🔄 LSTM → Pillar 3 Command**")
-        st.markdown("""
-```
-RBER spike detected on blocks 30–39
-→ LDPC iteration ceiling: 8 → 20
-  on blocks 30–39
-Result: ECC engine has 2.5× more
-  correction power on worn range
-```
-""")
 
-st.markdown("---")
 
 # ─── SMART Analytics + LSTM ───────────────────────────────────────────────────
 from sections.section3_smart import render_section3

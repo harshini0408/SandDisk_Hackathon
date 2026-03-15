@@ -3,11 +3,11 @@ AURA — Adaptive Unified Resource Architecture
 SSD Firmware Intelligence Platform
 Homepage
 """
-import streamlit as st
+import streamlit as st  # type: ignore
 import time
 import os
 import sys
-import plotly.graph_objects as go
+import plotly.graph_objects as go  # type: ignore
 
 sys.path.insert(0, os.path.dirname(__file__))
 
@@ -34,7 +34,7 @@ section[data-testid="stMain"] > div,
 }
 
 /* Force text visible in both light and dark OS modes */
-p, li, span, label, small, div, td, th, a {
+p, li, span, label, small, div, td, th, a, b, strong, i, em {
   color: #e8e8f0 !important;
 }
 
@@ -45,6 +45,10 @@ p, li, span, label, small, div, td, th, a {
 h1, h2, h3, h4, h5 {
   font-family: 'JetBrains Mono', monospace !important;
   color: #e8e8f0 !important;
+}
+
+[data-testid="stMarkdownContainer"] * {
+    color: #e8e8f0 !important;
 }
 
 [data-testid="stMetricValue"] { color: #22c55e !important; font-size: 1.5rem !important; font-weight: 700 !important; }
@@ -112,14 +116,14 @@ div.stAlert p { color: #0a0a0f !important; }
 
 # ─── Session State Init ───────────────────────────────────────────────────────
 if 'sim' not in st.session_state:
-    from core.ssd_simulator import SSDSimulator
+    from core.ssd_simulator import SSDSimulator  # type: ignore
     st.session_state['sim'] = SSDSimulator(preset='middle_aged')
     for _ in range(20):
         st.session_state['sim'].tick(60)
 
 if 'voltage_model' not in st.session_state:
     try:
-        import joblib
+        import joblib  # type: ignore
         vpath = os.path.join(os.path.dirname(__file__), 'models', 'voltage_model.pkl')
         st.session_state['voltage_model'] = joblib.load(vpath) if os.path.exists(vpath) else None
     except Exception:
@@ -157,23 +161,23 @@ with st.sidebar:
     c1, c2 = st.columns(2)
     with c1:
         if st.button("🆕 Fresh", key="preset_fresh"):
-            from core.ssd_simulator import SSDSimulator
+            from core.ssd_simulator import SSDSimulator  # type: ignore
             st.session_state['sim'] = SSDSimulator('fresh')
             for _ in range(20): st.session_state['sim'].tick(60)
             st.rerun()
         if st.button("💀 End-Life", key="preset_eol"):
-            from core.ssd_simulator import SSDSimulator
+            from core.ssd_simulator import SSDSimulator  # type: ignore
             st.session_state['sim'] = SSDSimulator('end_of_life')
             for _ in range(40): st.session_state['sim'].tick(60)
             st.rerun()
     with c2:
         if st.button("📀 Mid-Age", key="preset_mid"):
-            from core.ssd_simulator import SSDSimulator
+            from core.ssd_simulator import SSDSimulator  # type: ignore
             st.session_state['sim'] = SSDSimulator('middle_aged')
             for _ in range(30): st.session_state['sim'].tick(60)
             st.rerun()
         if st.button("🚨 Critical", key="preset_crit"):
-            from core.ssd_simulator import SSDSimulator
+            from core.ssd_simulator import SSDSimulator  # type: ignore
             st.session_state['sim'] = SSDSimulator('critical')
             for _ in range(50): st.session_state['sim'].tick(60)
             st.rerun()
@@ -228,9 +232,10 @@ st.markdown(f"""
     <div>
       <div style="font-family:'JetBrains Mono',monospace;font-size:32px;font-weight:700;color:#e8e8f0">🔷 AURA</div>
       <div style="font-family:'JetBrains Mono',monospace;font-size:13px;color:#a855f7;margin-top:2px">Adaptive Unified Resource Architecture</div>
-      <div style="font-size:13px;color:#8888a0;margin-top:6px;max-width:480px">
-        Predicts SSD failure <b style="color:#3b82f6">21 days early</b>, corrects bit errors in real-time,<br>
-        and leaves a tamper-proof diagnostic trail — even through a total crash.
+      <div style="font-size:14px;color:#8888a0;margin-top:6px;max-width:480px;line-height:1.6">
+        • Predicts failure <b>21 days early</b> (LSTM)<br>
+        • Adapts ECC power dynamically<br>
+        • Emits secure <b>crash diagnostics via over-the-air BLE</b>
       </div>
     </div>
     <div style="display:flex;gap:24px;flex-wrap:wrap">
@@ -270,11 +275,8 @@ with col1:
         st.markdown("### 🧠 Pillar 1 — Health & Diagnostics")
         st.caption("The brain. Predicts failure, commands all other pillars.")
         st.markdown("""
-- **Live SMART feed** — 12 metrics, sparklines
-- **LSTM predictor** — health score, RUL, failure probability
-- **Anomaly detection** — per-drive personal baseline
-- **AES-256 + Shamir** — encrypted tamper-proof reports
-- **OOB channels** — BLE beacon + UART (survives host crash)
+- **Live SMART & LSTM** — predicts failure length
+- **Crypto & OOB** — AES encrypted crash reports via BLE
 """)
         if st.button("Open Pillar 1 →", key="p1"):
             st.switch_page("pages/1_Pillar1.py")
@@ -284,10 +286,8 @@ with col2:
         st.markdown("### 🗃️ Pillar 2 — NAND Block Management")
         st.caption("The body. Manages every physical block on the chip.")
         st.markdown("""
-- **Live 8×8 block grid** — 64 blocks, colour-coded by wear
-- **Bad Block Table** — Bloom filter + Bitmap + Cuckoo hash
-- **O(1) lookup** — bit-arithmetic trace, no scan needed
-- **Wear retirement** — Phase D demo with CRC persistence
+- **Live 8×8 grid** — visualizes physical block wear
+- **O(1) Bad Block Table** — Bloom filter + Hash lookup
 """)
         if st.button("Open Pillar 2 →", key="p2"):
             st.switch_page("pages/2_Pillar2.py")
@@ -299,10 +299,8 @@ with col3:
         st.markdown("### 🛡️ Pillar 3 — ECC & Reliability")
         st.caption("The immune system. Corrects bit errors before they become data loss.")
         st.markdown("""
-- **AEGIS pipeline** — Tier 1 → BCH → Hard LDPC → Soft+ML → UECC
-- **Live syndrome demo** — H·r matrix calculation
-- **LDPC bit-flip trace** — step through each iteration
-- **Voltage shift model** — ML-based Tier 3 correction
+- **Dynamic LDPC** — scales correction power with block age
+- **ML voltage shift** — predicts read threshold drift
 """)
         if st.button("Open Pillar 3 →", key="p3"):
             st.switch_page("pages/3_Pillar3.py")
@@ -312,10 +310,8 @@ with col4:
         st.markdown("### ⚙️ Pillar 4 — Logic Optimization")
         st.caption("The optimizer. Shrinks firmware decision logic by 30–40% at build time.")
         st.markdown("""
-- **K-map** — 4-variable visual heatmap minimization
-- **Quine-McCluskey** — tabular reduction for 5+ variables
-- **BDD verification** — proves zero logic errors introduced
-- **30–40% cost reduction** — measured, not estimated
+- **K-map & tabular QMC** — boolean logic minimization
+- **30–40% smaller firmware** — verified via BDDs
 """)
         if st.button("Open Pillar 4 →", key="p4"):
             st.switch_page("pages/4_Pillar4.py")
@@ -325,8 +321,11 @@ st.markdown("---")
 st.markdown("## How the Pillars Connect")
 
 def _rgba(hex_color: str, alpha: float = 0.2) -> str:
-    h = hex_color.lstrip('#')
-    r, g, b = int(h[0:2], 16), int(h[2:4], 16), int(h[4:6], 16)
+    h = str(hex_color).replace('#', '')
+    if len(h) < 6: return f'rgba(0,0,0,{alpha})'
+    r = int(h[0] + h[1], 16)
+    g = int(h[2] + h[3], 16)
+    b = int(h[4] + h[5], 16)
     return f'rgba({r},{g},{b},{alpha})'
 
 nodes = {
@@ -343,16 +342,16 @@ node_colors = {
 }
 
 arrow_specs = [
-    dict(x=2.0,  y=2.05, ax=0.45, ay=2.05, arrowcolor='#22c55e',
-         text="↑ bad block / wear data", showarrow=True),
-    dict(x=0.45, y=1.85, ax=1.95, ay=1.85, arrowcolor='#3b82f6',
-         text="↓ retire block cmd", showarrow=True),
-    dict(x=2.0,  y=2.15, ax=3.55, ay=2.15, arrowcolor='#a855f7',
-         text="↑ ECC correction rate", showarrow=True),
-    dict(x=3.55, y=1.95, ax=2.05, ay=1.95, arrowcolor='#3b82f6',
-         text="↓ LDPC ceiling cmd", showarrow=True),
-    dict(x=2.0,  y=0.45, ax=2.0,  ay=1.6,  arrowcolor='#f59e0b',
-         text="BUILD-TIME", showarrow=True),
+    {"x": 2.0, "y": 2.05, "ax": 0.45, "ay": 2.05, "arrowcolor": '#22c55e',
+     "text": "↑ bad block / wear data", "showarrow": True},
+    {"x": 0.45, "y": 1.85, "ax": 1.95, "ay": 1.85, "arrowcolor": '#3b82f6',
+     "text": "↓ retire block cmd", "showarrow": True},
+    {"x": 2.0,  "y": 2.15, "ax": 3.55, "ay": 2.15, "arrowcolor": '#a855f7',
+     "text": "↑ ECC correction rate", "showarrow": True},
+    {"x": 3.55, "y": 1.95, "ax": 2.05, "ay": 1.95, "arrowcolor": '#3b82f6',
+     "text": "↓ LDPC ceiling cmd", "showarrow": True},
+    {"x": 2.0,  "y": 0.45, "ax": 2.0,  "ay": 1.6,  "arrowcolor": '#f59e0b',
+     "text": "BUILD-TIME", "showarrow": True},
 ]
 
 fig = go.Figure()
@@ -365,7 +364,7 @@ for spec in arrow_specs:
         arrowhead=2, arrowsize=1.2, arrowwidth=2,
         arrowcolor=spec['arrowcolor'],
         text=spec.get('text', ''),
-        font=dict(color=spec['arrowcolor'], size=9, family='JetBrains Mono'),
+        font={"color": spec['arrowcolor'], "size": 9, "family": 'JetBrains Mono'},
     )
 
 for label, (x, y) in nodes.items():
@@ -373,26 +372,26 @@ for label, (x, y) in nodes.items():
     fig.add_trace(go.Scatter(
         x=[x], y=[y],
         mode='markers+text',
-        marker=dict(
-            size=90,
-            color=_rgba(color, 0.15),
-            symbol='square',
-            line=dict(color=color, width=3),
-        ),
+        marker={
+            "size": 90,
+            "color": _rgba(color, 0.15),
+            "symbol": 'square',
+            "line": {"color": color, "width": 3},
+        },
         text=[label],
         textposition='middle center',
-        textfont=dict(color='#e8e8f0', size=10, family='JetBrains Mono'),
+        textfont={"color": '#e8e8f0', "size": 10, "family": 'JetBrains Mono'},
         showlegend=False,
         hoverinfo='skip',
     ))
 
 fig.update_layout(
     height=330,
-    margin=dict(l=10, r=10, t=10, b=10),
+    margin={"l": 10, "r": 10, "t": 10, "b": 10},
     paper_bgcolor='#0a0a0f',
     plot_bgcolor='#0a0a0f',
-    xaxis=dict(range=[-0.9, 4.9], showgrid=False, zeroline=False, showticklabels=False),
-    yaxis=dict(range=[-0.6, 3.1], showgrid=False, zeroline=False, showticklabels=False),
+    xaxis={"range": [-0.9, 4.9], "showgrid": False, "zeroline": False, "showticklabels": False},
+    yaxis={"range": [-0.6, 3.1], "showgrid": False, "zeroline": False, "showticklabels": False},
 )
 st.plotly_chart(fig, use_container_width=True, key="arch_diagram")
 

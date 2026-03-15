@@ -223,11 +223,11 @@ from sections.section1_nand import render_section1
 render_section1(sim)
 
 # ─── Signals sent to Pillar 1 ─────────────────────────────────────────────────
-with st.expander("📡 Signals sent to Pillar 1 (live)"):
-    st.markdown("""
-| Event | SMART metric updated | Effect in Pillar 1 |
-|---|---|---|
-| Block marked bad | ③ Bad block count +1 | LSTM re-runs, health score drops |
-| Block retired (wear) | ④ P/E avg, ⑩ Realloc count | RUL recalculated |
-| Write remapped | ⑨ Retry freq +1 | Anomaly detector checks baseline |
-""")
+st.markdown("### 📡 Signals sent to Pillar 1 (live)")
+import pandas as pd
+df = pd.DataFrame({
+    'Event': ['Block marked bad', 'Block retired (wear)', 'Write remapped'],
+    'SMART metric updated': ['③ Bad block count +1', '④ P/E avg, ⑩ Realloc count', '⑨ Retry freq +1'],
+    'Effect in Pillar 1': ['LSTM re-runs, health score drops', 'RUL recalculated', 'Anomaly detector checks baseline']
+})
+st.dataframe(df, hide_index=True, use_container_width=True)

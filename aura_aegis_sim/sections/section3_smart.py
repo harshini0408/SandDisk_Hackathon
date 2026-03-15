@@ -74,27 +74,45 @@ def render_smart_cards(sim):
 
 
 def render_smart_timeseries(sim):
-    st.markdown("#### 📉 14-Day SMART Time-Series")
+    st.markdown("#### 📉 Live SMART Time-Series")
     hist = sim.get_smart_history_array(500)
     if not hist or 'ecc_rate' not in hist:
         st.info("Accumulating SMART history...")
         return
 
     t = hist['t']
-    fig = go.Figure()
+    
     fields = ['ecc_rate','uecc_count','bad_block_count','pe_avg',
               'wear_level','rber','temperature','read_latency_us',
               'retry_freq','reallocated','program_fail','erase_fail']
     names = ['ECC Rate','UECC','Bad Blocks','P/E Avg','Wear','RBER',
              'Temp','Latency','Retries','Reallocated','Prog Fail','Erase Fail']
+    
+    # Let user dynamically choose metrics
+    name_to_fld = dict(zip(names, fields))
+    selected_names = st.multiselect(
+        "Select metrics to visualize (normalized 0–1):",
+        options=names,
+        default=['ECC Rate', 'Temp', 'Wear'],
+        key="smart_ts_select"
+    )
+    
+    if not selected_names:
+        st.warning("Please select at least one metric to visualize.")
+        return
+
+    fig = go.Figure()
     fill_fields = {'ecc_rate', 'bad_block_count', 'rber'}
 
-    for i, (fld, name) in enumerate(zip(fields, names)):
+    for name in selected_names:
+        fld = name_to_fld[name]
+        i = fields.index(fld)
         vals = hist[fld]
         mx = max(max(vals), 1e-12)
         norm = [v / mx for v in vals]
         fill = 'tozeroy' if fld in fill_fields else 'none'
         color = METRIC_COLORS[i]
+        
         # Convert hex color to rgba with alpha channel
         if color.startswith('#'):
             hex_color = color.lstrip('#')
@@ -104,6 +122,7 @@ def render_smart_timeseries(sim):
             fillcolor = f'rgba({r},{g},{b},0.1)'
         else:
             fillcolor = color
+            
         fig.add_trace(go.Scatter(
             x=t, y=norm, name=name, mode='lines',
             line=dict(color=color, width=1.5),

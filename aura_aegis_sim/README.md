@@ -1,97 +1,89 @@
-# AURA-AEGIS — Adaptive Unified Reliability Architecture
-## Adaptive ECC & Grade-Intelligent Supervision
+# 🔷 AURA
+### Adaptive Unified Resource Architecture
 
-A **unified Streamlit application** that simulates an advanced SSD firmware intelligence system. Watch an SSD being born, operated, stressed, degraded, and saved — all in one connected narrative flow.
+AURA is an intelligent SSD firmware architecture designed to extend the lifespan and reliability of NAND flash storage. By integrating Machine Learning and real-time telemetry, AURA predicts failures, dynamically adjusts ECC (Error Correction Code) thresholds, and securely broadcasts diagnostics.
 
-### 🎯 One-Sentence Pitch
-
-> "We don't wait for SSD failure. We learn each drive's unique degradation fingerprint, correct errors before they compound, and predict failure 21 days early — with a secure, tamper-proof diagnostic trail that survives even a total system crash."
-
-## ⚡ Quick Start
-
-```bash
-# One-click launch (Windows):
-run.bat
-
-# Manual setup:
-pip install -r requirements.txt
-python setup_models.py                    # Create ML models (one-time)
-streamlit run app.py
-```
-
-App runs at: **http://localhost:8501**
+[**Live Demo (Streamlit)**](#) *(Add deployed link here)*
 
 ---
 
-## Project Structure
+## 🛠️ Tech Stack Used
+
+This simulation and visualization platform was built entirely using pure Python and its data science ecosystem to rapidly prototype hardware-level firmware logic.
+
+### **Frontend / Simulation UI**
+* **[Streamlit](https://streamlit.io/):** The core framework powering the multi-page interactive web application, allowing rapid UI development in Python.
+* **[Plotly Graph Objects](https://plotly.com/python/):** Used for rendering highly interactive and responsive time-series graphs, logic matrices, and the architectural connection diagrams.
+* **Custom CSS (Injected via Streamlit):** Aggressively overrides Streamlit's base styling to enforce a persistent, responsive Dark Mode that matches standard IDE terminal colors regardless of the host OS system theme.
+
+### **Backend / Machine Learning Engine**
+* **[PyTorch](https://pytorch.org/):** Powers Pillar 1's deep learning components. Specifically, it runs the **LSTM (Long Short-Term Memory)** neural network that analyzes sequential SMART data to predict accurate Failure Probabilities and Remaining Useful Life (RUL).
+* **[Scikit-Learn](https://scikit-learn.org/):** Powers Pillar 3's regression models. Used specifically for the **Voltage Shift model** which predicts the necessary reference voltage shifts based on block wear and dwell time.
+* **[Joblib](https://joblib.readthedocs.io/):** Used to efficiently serialize and load the pre-trained Scikit-Learn `.pkl` models from disk into the Streamlit session state.
+
+### **Data Handling & State Management**
+* **[Pandas](https://pandas.pydata.org/):** Used for structuring and formatting raw telemetry data into structured, interactive dataframes (e.g., inside Pillar 2).
+* **[NumPy](https://numpy.org/):** Handles the underlying numerical transformations, mathematical calculations for failure probability, and normalizations for the SMART graphs.
+* **Streamlit Session State (`st.session_state`):** Acts as the central memory store for the `SSDSimulator` object, allowing the firmware state (bad blocks, wear leveling, etc.) to persist as the user navigates between the different Pillar pages.
+
+---
+
+## 🏗️ Project Structure
+
+The project is structured as a Streamlit multi-page application with decoupled backend simulator logic.
 
 ```
 aura_aegis_sim/
-├── app.py                      ← Main Streamlit application
-├── run.bat                     ← One-click launch script
-├── requirements.txt
-├── models/
-│   ├── voltage_model.pkl       ← sklearn GradientBoosting (auto-trained)
-│   ├── lstm_health.pth         ← PyTorch LSTM (run train_lstm.py)
-│   └── lstm_health.onnx        ← ONNX export
-├── training/
-│   ├── train_voltage_model.py
-│   ├── train_lstm.py
-│   └── generate_training_data.py
-├── core/
-│   ├── ssd_simulator.py        ← Central SSD state machine
-│   ├── bbt_engine.py           ← Bloom + Bitmap + Cuckoo hash BBT
-│   ├── ldpc_engine.py          ← Real LDPC bit-flip decoder
-│   ├── smart_engine.py         ← 12 SMART metric definitions
-│   ├── lstm_predictor.py       ← Inference wrapper (falls back to heuristic)
-│   └── kmap_qmc_engine.py      ← K-map / QMC / BDD logic optimizer
-├── crypto/
-│   ├── aes_layer.py            ← AES-256-GCM encrypt/decrypt
-│   └── shamir_layer.py         ← Shamir 3-of-5 secret sharing (no lib needed)
-├── oob/
-│   └── uart_simulator.py       ← UART/BLE OOB dump generator
-└── sections/
-    ├── section1_nand.py        ← NAND grid + BBT internals UI
-    ├── section2_ecc.py         ← LDPC pipeline + syndrome demo UI
-    ├── section3_smart.py       ← SMART cards + LSTM engine UI
-    └── section4_security.py    ← Crypto + OOB + K-map demo UI
+├── app.py                     # Main dashboard and entry point
+├── requirements.txt           # Python dependencies (for Render/cloud deployment)
+├── render.yaml                # Infrastructure-as-code configuration for Render deployment
+├── .streamlit/
+│   └── config.toml            # Enforces dark theme at the framework level
+├── pages/                     # Streamlit multi-page interface routing
+│   ├── 0_Manual.py            # Overview & usage guide for judges
+│   ├── 1_Pillar1.py           # Health Monitoring & Diagnostics (LSTM)
+│   ├── 2_Pillar2.py           # NAND Block Management
+│   ├── 3_Pillar3.py           # Data Reliability & Error Correction
+│   └── 4_Pillar4.py           # Firmware Logic Optimization
+├── core/                      # Backend Simulation Engine
+│   ├── ssd_simulator.py       # Core state machine (wear leveling, block tracking)
+│   ├── smart_engine.py        # SMART attribute tracking and event logs
+│   ├── bbt_engine.py          # Bad Block Table logic (Bloom filters, Cuckoo hashes)
+│   ├── ldpc_engine.py         # Simulated Error Correction logic
+│   └── lstm_predictor.py      # PyTorch model loader and inference engine
+├── models/                    # Serialized Machine Learning artifacts
+│   ├── lstm_model.pt          # PyTorch checkpoint
+│   └── voltage_model.pkl      # Scikit-learn random forest model
+├── crypto/                    # Over-the-air security logic
+│   └── aes_ccm.py             
+└── sections/                  # UI component modules (for Pillar 1 & 2)
 ```
 
 ---
 
-## Technical Claims
+## 🚀 Running Locally
 
-| Claim | Evidence |
-|---|---|
-| O(1) bad block lookup | Bloom→Bitmap→Cuckoo 3-tier, bit-arithmetic shown in Section 1 |
-| LDPC scales with wear | Iteration cap 8→20 based on P/E%, chart in Section 2 |
-| LSTM predicts 21 days early | Real PyTorch model, physics-trained, attention heatmap in Section 3 |
-| Pillar 4 commands Pillars 1 & 2 | Live command log in Section 3 |
-| OOB works when host is dead | UART dump demo in Section 4 |
-| AES-256 + Shamir key protection | Live encrypt/decrypt + 3-of-5 reconstruction in Section 4 |
-| Logic optimization ~30–40% | K-map QMC demo with BDD verification in Section 4 |
+To run the AURA simulator on your local machine:
 
-All algorithms are real Python implementations — not mocked.
+1. **Clone the repository:**
+   ```bash
+   git clone <repository_url>
+   cd aura_aegis_sim
+   ```
 
----
+2. **Create a virtual environment (Optional but Recommended):**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   ```
 
-## 3-Minute Demo Flow
+3. **Install Dependencies:**
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-**Minute 1 — "The problem is real-time"**
-1. Open app (fresh drive preset)
-2. Switch to **Stress** mode → watch NAND grid turn orange/red
-3. Bad blocks appear live. SMART metrics climb.
-4. "Standard firmware does nothing. Watch ours."
-
-**Minute 2 — "Every layer responds to every other layer"**
-1. Section 2: LDPC escalates to Tier 3 → metric ⑨ jumps
-2. Section 3: LSTM re-evaluates → health drops 81→61
-3. Click **"LSTM → Retire Block Proactively"** → command propagates to Pillar 1
-4. Block 44 retired before failure. Zero data loss.
-
-**Minute 3 — "Even after a crash, nothing is lost"**
-1. Click **Kill Host** → in-band goes ✗ DOWN
-2. Section 4: UART dump scrolls live
-3. Click **Generate Diagnostic Report** → plaintext → AES encrypted
-4. Select any 3 shares → **Reconstruct Key** → decrypted data matches
-5. "This survived a total crash, encrypted, requires 3 authorized parties."
+4. **Launch the Streamlit App:**
+   ```bash
+   streamlit run app.py
+   ```
+   *The application will automatically open in your default web browser at `http://localhost:8501`.*
