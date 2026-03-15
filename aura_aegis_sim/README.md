@@ -3,7 +3,7 @@
 
 AURA is an intelligent SSD firmware architecture designed to extend the lifespan and reliability of NAND flash storage. By integrating Machine Learning and real-time telemetry, AURA predicts failures, dynamically adjusts ECC (Error Correction Code) thresholds, and securely broadcasts diagnostics.
 
-[**Live Demo (Streamlit)**](#) *(Add deployed link here)*
+[**Live Demo (Streamlit)**](https://sanddisk-hackathon.onrender.com) 
 
 ---
 
@@ -67,7 +67,7 @@ To run the AURA simulator on your local machine:
 
 1. **Clone the repository:**
    ```bash
-   git clone <repository_url>
+   git clone https://github.com/harshini0408/SandDisk_Hackathon
    cd aura_aegis_sim
    ```
 
