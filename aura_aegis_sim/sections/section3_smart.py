@@ -95,11 +95,20 @@ def render_smart_timeseries(sim):
         norm = [v / mx for v in vals]
         fill = 'tozeroy' if fld in fill_fields else 'none'
         color = METRIC_COLORS[i]
+        # Convert hex color to rgba with alpha channel
+        if color.startswith('#'):
+            hex_color = color.lstrip('#')
+            r = int(hex_color[0:2], 16)
+            g = int(hex_color[2:4], 16)
+            b = int(hex_color[4:6], 16)
+            fillcolor = f'rgba({r},{g},{b},0.1)'
+        else:
+            fillcolor = color
         fig.add_trace(go.Scatter(
             x=t, y=norm, name=name, mode='lines',
             line=dict(color=color, width=1.5),
             fill=fill,
-            fillcolor=color + '1a',
+            fillcolor=fillcolor,
         ))
 
     fig.update_layout(
