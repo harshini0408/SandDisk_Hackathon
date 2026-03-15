@@ -74,7 +74,7 @@ To run the AURA simulator on your local machine:
 2. **Create a virtual environment (Optional but Recommended):**
    ```bash
    python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
+   venv\Scripts\activate  # On macOS: source venv/bin/activate
    ```
 
 3. **Install Dependencies:**
