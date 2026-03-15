@@ -320,86 +320,88 @@ with col4:
 st.markdown("---")
 st.markdown("## How the Pillars Connect")
 
-def _rgba(hex_color: str, alpha: float = 0.2) -> str:
-    h = str(hex_color).replace('#', '')
-    if len(h) < 6: return f'rgba(0,0,0,{alpha})'
-    r = int(h[0] + h[1], 16)
-    g = int(h[2] + h[3], 16)
-    b = int(h[4] + h[5], 16)
-    return f'rgba({r},{g},{b},{alpha})'
+st.markdown("""
+<style>
+.arch-outer{font-family:'Inter',sans-serif;max-width:860px;margin:0 auto;padding:10px 24px 24px;background:#0a0a0f;color:#e8e8f0}
+.pb{border-radius:14px;padding:20px 26px;text-align:center}
+.pb-title{font-size:17px;font-weight:700;margin-bottom:6px;color:#e8e8f0}
+.pb-desc{font-size:12px;line-height:1.5;color:#9898b8}
+.pb-p1{background:linear-gradient(160deg,#1e3a8a,#172554);border:2px solid #3b82f6;box-shadow:0 6px 28px rgba(59,130,246,0.25)}
+.pb-p2{background:linear-gradient(160deg,#064e3b,#022c22);border:2px solid #10b981;box-shadow:0 4px 14px rgba(16,185,129,0.2)}
+.pb-p2 .pb-desc{color:#6ee7b7}
+.pb-p3{background:linear-gradient(160deg,#581c87,#3b0764);border:2px solid #a855f7;box-shadow:0 4px 14px rgba(168,85,247,0.2)}
+.pb-p3 .pb-desc{color:#d8b4fe}
+.pb-p4{background:rgba(18,18,28,0.4);border:2px dashed #3a3a52}
+.pb-p4 .pb-title{color:#5a5a70}
+.pb-p4 .pb-desc{color:#3a3a52;font-style:italic}
+.sb{border-radius:8px;padding:10px 14px;font-size:12px;text-align:center;background:rgba(8,8,16,0.92);width:190px}
+.sb b{display:block;font-size:13px;margin-bottom:3px}
+.sb-green{border:1px solid #10b981;color:#a7f3d0}
+.sb-green b{color:#34d399}
+.sb-blue{border:1px dashed #3b82f6;color:#93c5fd}
+.sb-blue b{color:#60a5fa}
+.sb-purple{border:1px solid #a855f7;color:#e9d5ff}
+.sb-purple b{color:#c084fc}
+.arch-row{display:flex;align-items:flex-start;justify-content:center;width:100%}
+.arch-col{display:flex;flex-direction:column;align-items:center}
+.arch-legend{display:flex;gap:24px;justify-content:center;flex-wrap:wrap;margin-top:8px;padding:10px 16px;background:rgba(255,255,255,0.02);border:1px solid #2a2a3a;border-radius:8px;font-size:11px;color:#6b6b80}
+.lg{display:flex;align-items:center;gap:7px}
+.lg-solid{width:26px;height:2px;background:#10b981}
+.lg-dash{width:26px;height:0;border-top:2px dashed #3b82f6}
+.lg-gray{width:26px;height:0;border-top:2px dashed #3a3a52}
+</style>
+<div class="arch-outer">
+<div class="arch-col" style="align-items:center">
+<div class="pb pb-p1" style="width:310px">
+<div class="pb-title">Pillar 1</div>
+<div class="pb-desc">Health Monitoring &amp; Diagnostics &nbsp;·&nbsp; LSTM Brain</div>
+</div>
+</div>
+<div class="arch-row" style="gap:0;margin-top:6px">
+<div class="arch-col" style="flex:1;gap:8px">
+<span style="font-size:10px;color:#10b981">▲</span>
+<div class="sb sb-green"><b>Bad block events</b>Wear counts &middot; P/E cycles</div>
+<span style="font-size:10px;color:#3b82f6">▼</span>
+<div class="sb sb-blue"><b>Proactive block retirement</b>command from LSTM</div>
+</div>
+<div class="arch-col" style="width:100px;padding-top:28px;gap:4px">
+<span style="color:#3a3a52;font-size:11px;text-align:center;line-height:1.4">no runtime<br>signals</span>
+<div style="height:18px;width:0;border-left:2px dashed #3a3a52;margin:0 auto"></div>
+<span style="color:#3a3a52;font-size:10px">▼</span>
+</div>
+<div class="arch-col" style="flex:1;gap:8px">
+<span style="font-size:10px;color:#a855f7">▲</span>
+<div class="sb sb-purple"><b>ECC correction rates</b>RBER metrics</div>
+<span style="font-size:10px;color:#3b82f6">▼</span>
+<div class="sb sb-blue"><b>LDPC ceiling raise</b>command from LSTM</div>
+</div>
+</div>
+<div class="arch-row" style="gap:0;margin-top:4px">
+<div style="flex:1;display:flex;justify-content:center">
+<div class="pb pb-p2" style="width:215px">
+<div class="pb-title">Pillar 2</div>
+<div class="pb-desc">NAND Block<br>Management</div>
+</div>
+</div>
+<div style="width:100px"></div>
+<div style="flex:1;display:flex;justify-content:center">
+<div class="pb pb-p3" style="width:215px">
+<div class="pb-title">Pillar 3</div>
+<div class="pb-desc">Data Reliability &amp;<br>Error Correction</div>
+</div>
+</div>
+</div>
+<div class="arch-col" style="align-items:center;margin-top:12px">
+<div class="pb pb-p4" style="width:310px">
+<div class="pb-title">Pillar 4</div>
+<div class="pb-desc">Firmware Logic Optimization &nbsp;&middot;&nbsp; build-time only</div>
+</div>
+</div>
+<div class="arch-legend">
+<div class="lg"><div class="lg-solid"></div>signals to Pillar 1</div>
+<div class="lg"><div class="lg-dash"></div>commands from Pillar 1</div>
+<div class="lg"><div class="lg-gray"></div>Pillar 4 &mdash; build-time only</div>
+</div>
+</div>
+""", unsafe_allow_html=True)
 
-nodes = {
-    "Pillar 1\n(Health Brain)": (2, 2),
-    "Pillar 2\n(NAND Grid)":   (0, 2),
-    "Pillar 3\n(ECC Engine)":  (4, 2),
-    "Pillar 4\n(Logic Opt)":   (2, 0),
-}
-node_colors = {
-    "Pillar 1\n(Health Brain)": "#3b82f6",
-    "Pillar 2\n(NAND Grid)":   "#22c55e",
-    "Pillar 3\n(ECC Engine)":  "#a855f7",
-    "Pillar 4\n(Logic Opt)":   "#f59e0b",
-}
-
-arrow_specs = [
-    {"x": 2.0, "y": 2.05, "ax": 0.45, "ay": 2.05, "arrowcolor": '#22c55e',
-     "text": "↑ bad block / wear data", "showarrow": True},
-    {"x": 0.45, "y": 1.85, "ax": 1.95, "ay": 1.85, "arrowcolor": '#3b82f6',
-     "text": "↓ retire block cmd", "showarrow": True},
-    {"x": 2.0,  "y": 2.15, "ax": 3.55, "ay": 2.15, "arrowcolor": '#a855f7',
-     "text": "↑ ECC correction rate", "showarrow": True},
-    {"x": 3.55, "y": 1.95, "ax": 2.05, "ay": 1.95, "arrowcolor": '#3b82f6',
-     "text": "↓ LDPC ceiling cmd", "showarrow": True},
-    {"x": 2.0,  "y": 0.45, "ax": 2.0,  "ay": 1.6,  "arrowcolor": '#f59e0b',
-     "text": "BUILD-TIME", "showarrow": True},
-]
-
-fig = go.Figure()
-
-for spec in arrow_specs:
-    fig.add_annotation(
-        x=spec['x'], y=spec['y'], ax=spec['ax'], ay=spec['ay'],
-        xref='x', yref='y', axref='x', ayref='y',
-        showarrow=spec['showarrow'],
-        arrowhead=2, arrowsize=1.2, arrowwidth=2,
-        arrowcolor=spec['arrowcolor'],
-        text=spec.get('text', ''),
-        font={"color": spec['arrowcolor'], "size": 9, "family": 'JetBrains Mono'},
-    )
-
-for label, (x, y) in nodes.items():
-    color = node_colors[label]
-    fig.add_trace(go.Scatter(
-        x=[x], y=[y],
-        mode='markers+text',
-        marker={
-            "size": 90,
-            "color": _rgba(color, 0.15),
-            "symbol": 'square',
-            "line": {"color": color, "width": 3},
-        },
-        text=[label],
-        textposition='middle center',
-        textfont={"color": '#e8e8f0', "size": 10, "family": 'JetBrains Mono'},
-        showlegend=False,
-        hoverinfo='skip',
-    ))
-
-fig.update_layout(
-    height=330,
-    margin={"l": 10, "r": 10, "t": 10, "b": 10},
-    paper_bgcolor='#0a0a0f',
-    plot_bgcolor='#0a0a0f',
-    xaxis={"range": [-0.9, 4.9], "showgrid": False, "zeroline": False, "showticklabels": False},
-    yaxis={"range": [-0.6, 3.1], "showgrid": False, "zeroline": False, "showticklabels": False},
-)
-st.plotly_chart(fig, use_container_width=True, key="arch_diagram")
-
-st.markdown("""<div style="background:#12121a;border:1px solid #2a2a3a;border-radius:8px;
-padding:12px 20px;font-family:monospace;font-size:12px">
-<span style="color:#22c55e">Pillar 2 → Pillar 1:</span> bad block events & wear counts<br>
-<span style="color:#a855f7">Pillar 3 → Pillar 1:</span> ECC rates & RBER metrics<br>
-<span style="color:#3b82f6">Pillar 1 → Pillar 2:</span> proactive block retirement commands<br>
-<span style="color:#3b82f6">Pillar 1 → Pillar 3:</span> LDPC ceiling raise commands<br>
-<span style="color:#f59e0b">Pillar 4:</span> standalone — operates at firmware build time only
-</div>""", unsafe_allow_html=True)

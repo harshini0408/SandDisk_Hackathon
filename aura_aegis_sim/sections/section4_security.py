@@ -174,7 +174,7 @@ Signal: {pkt['rssi_dbm']} dBm<br>
 
 
 def render_kmap_section():
-    st.markdown("#### 🗂️ Pillar 3 — Logic Optimization Proof (K-map / QMC)")
+    st.markdown("#### 🗂️ Pillar 4 — Logic Optimization Proof (K-map / QMC)")
     tab_kmap, tab_qmc = st.tabs(["4-Variable K-Map", "QMC 5-Variable Demo"])
 
     with tab_kmap:
@@ -231,12 +231,10 @@ def render_kmap_section():
 
 def render_section4(sim):
     st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.markdown("## 🔷 SECTION 4 — Security + Minimization Algorithms")
+    st.markdown("## 🔷 SECTION 4 — Security & OOB Channels")
     render_crypto_section(sim)
     st.markdown("---")
     render_shamir_section()
     st.markdown("---")
     render_oob_section(sim)
-    st.markdown("---")
-    render_kmap_section()
     st.markdown('</div>', unsafe_allow_html=True)

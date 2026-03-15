@@ -7,19 +7,23 @@ import numpy as np
 import os
 from typing import Optional
 
-try:
-    import torch
-    import torch.nn as nn
-    TORCH_AVAILABLE = True
-except ImportError:
-    TORCH_AVAILABLE = False
+import streamlit as st  # type: ignore
 
+TORCH_AVAILABLE = None
 
-class LSTMHealthPredictor(object if not TORCH_AVAILABLE else object):
-    pass
+def _check_torch():
+    global TORCH_AVAILABLE
+    if TORCH_AVAILABLE is not None:
+        return TORCH_AVAILABLE
+    try:
+        import torch  # type: ignore
+        TORCH_AVAILABLE = True
+    except ImportError:
+        TORCH_AVAILABLE = False
+    return TORCH_AVAILABLE
 
-
-if TORCH_AVAILABLE:
+def _get_model_class():
+    import torch  # type: ignore
     class LSTMHealthPredictorModel(torch.nn.Module):
         def __init__(self, input_size=12, hidden1=64, hidden2=32):
             super().__init__()
@@ -36,29 +40,24 @@ if TORCH_AVAILABLE:
             x, _ = self.lstm1(x)
             x, _ = self.lstm2(x)
             return self.fc(x[:, -1, :])
-
+    return LSTMHealthPredictorModel
 
 MODEL_PATH = os.path.join(os.path.dirname(__file__), '..', 'models', 'lstm_health.pth')
-_model = None
-_model_loaded = False
 
-
+@st.cache_resource
 def _load_model():
-    global _model, _model_loaded
-    if _model_loaded:
-        return _model
-    _model_loaded = True
-    if not TORCH_AVAILABLE:
+    if not _check_torch():
         return None
+    import torch  # type: ignore
     abs_path = os.path.abspath(MODEL_PATH)
     if not os.path.exists(abs_path):
         return None
     try:
-        m = LSTMHealthPredictorModel()
+        m_class = _get_model_class()
+        m = m_class()
         m.load_state_dict(torch.load(abs_path, map_location='cpu'))
         m.eval()
-        _model = m
-        return _model
+        return m
     except Exception:
         return None
 
@@ -93,6 +92,7 @@ def predict(features_60: np.ndarray) -> dict:
 
     if model is not None:
         try:
+            import torch  # type: ignore
             x = torch.tensor(features_60[np.newaxis, :, :], dtype=torch.float32)
             with torch.no_grad():
                 out = model(x).numpy()[0]

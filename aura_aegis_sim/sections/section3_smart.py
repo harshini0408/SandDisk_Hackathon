@@ -247,7 +247,7 @@ def render_lstm_engine(sim):
 
 
 def render_lstm_commands(sim):
-    st.markdown("#### 🔗 Pillar 4 → Pillar 1 & 2 Commands")
+    st.markdown("#### 🔗 LSTM Engine → Pillar 2 & 3 Commands")
     col_p1, col_p2 = st.columns(2)
     with col_p1:
         target_block = st.number_input("Predictive retire block:", 0, 63, 44, key="pred_block")

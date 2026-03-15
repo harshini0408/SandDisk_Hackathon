@@ -292,7 +292,7 @@ with tab5:
     st.dataframe(df, use_container_width=True, hide_index=True)
 
     st.markdown("---")
-    st.markdown("### Recommended Demo Flow for Judges")
+    st.markdown("### Recommended Demo Flow")
     st.markdown("""
 1. **Homepage** — Read the architecture diagram. Understand Pillar 1 is the brain.
 2. **Set Mid-Age preset** (sidebar) — gives interesting live data immediately.
