@@ -133,6 +133,8 @@ def _tokenize(expr: str):
             i += 1
         elif c.isupper():
             tokens.append(('VAR', c)); i += 1
+        elif c in ('0', '1'):          # constant literal
+            tokens.append(('CONST', int(c))); i += 1
         elif c == '&':
             tokens.append(('AND', '&')); i += 1
         elif c == '+':
@@ -191,6 +193,9 @@ class _Parser:
         if tok[0] == 'VAR':
             self._consume('VAR')
             return ('VAR', tok[1])
+        if tok[0] == 'CONST':          # handle '0' and '1' constants
+            self._consume('CONST')
+            return ('CONST', tok[1])
         if tok[0] == 'LP':
             self._consume('LP')
             node = self.parse_or()
@@ -203,6 +208,8 @@ def _eval_tree(tree, assignment: Dict[str, int]) -> int:
     """Evaluate a parse tree given a variable assignment.  Returns 0 or 1."""
     if tree[0] == 'VAR':
         return assignment.get(tree[1], 0)
+    if tree[0] == 'CONST':             # constant literal 0 or 1
+        return tree[1]
     if tree[0] == 'NOT':
         return 1 - _eval_tree(tree[1], assignment)
     if tree[0] == 'AND':
@@ -214,7 +221,13 @@ def _eval_tree(tree, assignment: Dict[str, int]) -> int:
 
 def safe_parse(expr: str):
     """Parse expression → tree or raise ValueError."""
-    tokens = _tokenize(expr)
+    # Handle bare constants before tokenising
+    stripped = expr.strip()
+    if stripped == '1':
+        return ('CONST', 1)
+    if stripped == '0':
+        return ('CONST', 0)
+    tokens = _tokenize(stripped)
     if not tokens:
         raise ValueError("Empty expression")
     parser = _Parser(tokens)
