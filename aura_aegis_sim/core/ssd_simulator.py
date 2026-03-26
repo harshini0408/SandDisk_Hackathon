@@ -97,8 +97,7 @@ class SSDSimulator:
                 if i in RESERVED_BLOCKS:
                     continue
                 blk.pe_count = self._rng.randint(1000, 2000)
-            FACTORY_BAD.update({11, 23})
-            self._mark_initial_bad_blocks({5, 11, 23}, REASON_FACTORY)
+            self._mark_initial_bad_blocks(FACTORY_BAD | {11, 23}, REASON_FACTORY)
         elif preset == 'end_of_life':
             for i, blk in enumerate(self.blocks):
                 if i in RESERVED_BLOCKS:

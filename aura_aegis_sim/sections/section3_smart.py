@@ -286,7 +286,7 @@ def render_lstm_commands(sim):
 
 def render_section3(sim):
     st.markdown('<div class="section-card">', unsafe_allow_html=True)
-    st.markdown("## 🔷 SECTION 1 — SMART Analytics + LSTM Prediction")
+    st.markdown("## 🔷 SECTION 3 — SMART Analytics + LSTM Prediction")
     render_smart_cards(sim)
     st.markdown("---")
     render_smart_timeseries(sim)

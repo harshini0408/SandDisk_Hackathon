@@ -6,6 +6,7 @@ import streamlit as st
 import time
 import os
 import sys
+import pandas as pd
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(__file__)))
 
@@ -156,6 +157,14 @@ if 'last_tick' not in st.session_state:
 sim = st.session_state['sim']
 speed = st.session_state.get('speed_val', 1)
 
+# ── Hardware threshold refs (set by sidebar) ──────────────────────────────────
+_ecc_warn_ref = [250]
+_bb_crit_ref  = [80]
+
+# ── Initialize hardware session state BEFORE sidebar accesses it ──────────────
+from sections.section_hw_monitor import _init_hw_state  # type: ignore
+_init_hw_state()
+
 # ─── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
     st.markdown("### 🔷 AURA")
@@ -229,6 +238,10 @@ with st.sidebar:
         for _ in range(speed):
             sim.tick(60.0)
         st.rerun()
+
+    # ── Hardware sidebar controls ──────────────────────────────────────────
+    from sections.section_hw_monitor import render_hw_sidebar  # type: ignore
+    render_hw_sidebar(_ecc_warn_ref, _bb_crit_ref)
 
     st.markdown("---")
     snap_sb = sim.get_latest_smart()
@@ -304,12 +317,21 @@ st.info("**Pillar 1** is the central intelligence hub. "
         "It reads health signals from Pillar 2 (bad block events) and Pillar 3 (ECC corrections), "
         "then issues commands back: retire a block early, or raise the LDPC correction ceiling.")
 
+# ─── Tabbed layout: Hardware Monitor | SMART Analytics | Security ─────────────
+hw_tab, smart_tab, sec_tab = st.tabs([
+    "🔌 Hardware Monitor",
+    "📊 SMART Analytics + LSTM",
+    "🔐 Security & OOB",
+])
 
+with hw_tab:
+    from sections.section_hw_monitor import render_hw_monitor  # type: ignore
+    render_hw_monitor(ecc_warn=_ecc_warn_ref[0], bb_crit=_bb_crit_ref[0])
 
-# ─── SMART Analytics + LSTM ───────────────────────────────────────────────────
-from sections.section3_smart import render_section3
-render_section3(sim)
+with smart_tab:
+    from sections.section3_smart import render_section3
+    render_section3(sim)
 
-# ─── Security + OOB ──────────────────────────────────────────────────────────
-from sections.section4_security import render_section4
-render_section4(sim)
+with sec_tab:
+    from sections.section4_security import render_section4
+    render_section4(sim)
