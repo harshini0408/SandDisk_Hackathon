@@ -63,16 +63,11 @@ except ImportError as _e:
     ENGINE_OK = False
     ENGINE_ERR = str(_e)
 
-# ─── Sidebar (navigation only) ───────────────────────────────────────────────
+# ─── Shared Sidebar ──────────────────────────────────────────────────────────
+from core.shared_sidebar import render_sidebar
+render_sidebar('4')
+
 with st.sidebar:
-    st.markdown("### 🔷 AURA")
-    st.page_link("app.py",             label="Home",                            icon="🏠")
-    st.page_link("pages/0_Manual.py",  label="📖 Quick Manual",                icon="📖")
-    st.page_link("pages/1_Pillar1.py", label="Pillar 1 — Health & Diagnostics", icon="🧠")
-    st.page_link("pages/2_Pillar2.py", label="Pillar 2 — NAND Block Mgmt",     icon="🗃️")
-    st.page_link("pages/3_Pillar3.py", label="Pillar 3 — ECC & Reliability",   icon="🛡️")
-    st.page_link("pages/4_Pillar4.py", label="Pillar 4 — Logic Optimization",  icon="⚙️")
-    st.divider()
     st.markdown("""
 <div style="font-family:monospace;font-size:11px;color:#8888a0">
 <b style="color:#e8e8f0">Mode:</b> BUILD-TIME<br>

@@ -114,19 +114,13 @@ if 'last_tick' not in st.session_state:
 sim = st.session_state['sim']
 speed = st.session_state.get('speed_val', 1)
 
-# ─── Sidebar ──────────────────────────────────────────────────────────────────
-with st.sidebar:
-    st.markdown("### 🔷 AURA")
-    st.page_link("app.py",             label="Home",                            icon="🏠")
-    st.page_link("pages/0_Manual.py",  label="📖 Quick Manual",                icon="📖")
-    st.page_link("pages/1_Pillar1.py", label="Pillar 1 — Health & Diagnostics", icon="🧠")
-    st.page_link("pages/2_Pillar2.py", label="Pillar 2 — NAND Block Mgmt",     icon="🗃️")
-    st.page_link("pages/3_Pillar3.py", label="Pillar 3 — ECC & Reliability",   icon="🛡️")
-    st.page_link("pages/4_Pillar4.py", label="Pillar 4 — Logic Optimization",  icon="⚙️")
-    st.divider()
-    st.caption("Pillar 1 commands Pillar 2 & 3.\nPillar 4 is build-time only.")
-    st.markdown("---")
+# ─── Shared Sidebar (nav + HW connection) ────────────────────────────────────
+from core.shared_sidebar import render_sidebar
+render_sidebar('2')
 
+# ─── Sidebar – Simulation Controls ───────────────────────────────────────────
+with st.sidebar:
+    st.divider()
     st.markdown("### 🎮 Simulation Controls")
     speed = st.select_slider("Speed", options=[1, 5, 20, 100], value=1, key="speed_sel_p2")
     st.session_state['speed_val'] = speed

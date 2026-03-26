@@ -228,6 +228,10 @@ div[data-baseweb="tab"][aria-selected="true"] {
 </style>
 """, unsafe_allow_html=True)
 
+# ─── Shared Sidebar (nav + HW connection) ────────────────────────────────────
+from core.shared_sidebar import render_sidebar
+render_sidebar('5')
+
 # ─── Session State Initialization ─────────────────────────────────────────────
 if 'simulator' not in st.session_state:
     st.session_state.simulator = SSDSimulator()

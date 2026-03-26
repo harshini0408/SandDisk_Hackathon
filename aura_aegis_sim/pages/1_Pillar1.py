@@ -131,7 +131,39 @@ div[data-baseweb="tab"][aria-selected="true"] { color: var(--blue) !important; b
 </style>
 """, unsafe_allow_html=True)
 
-# ─── Guard: require sim from session state ────────────────────────────────────
+# ─── Scenario Banner (injected by Simulation Controller) ─────────────────────
+_SC_LABELS = {
+    1: ("🟢 Sc 1 — SSD Boot",                "#22c55e"),
+    2: ("🔵 Sc 2 — Read Request",             "#3b82f6"),
+    4: ("🔴 Sc 4 — Block Degradation",        "#ef4444"),
+    5: ("🚨 Sc 5 — Host Crash / OOB",         "#ef4444"),
+}
+_sc = st.session_state.get("sc_scenario")
+if _sc in _SC_LABELS:
+    _lbl, _col = _SC_LABELS[_sc]
+    _evs = ""
+    _st  = st.session_state.get("sc_state")
+    if _st and _st.get("event_log"):
+        for _e in _st["event_log"][-4:]:
+            _evs += "[" + _e["source"] + "] " + _e["type"] + " "
+    _sm = (_st["smart_metrics"] if _st else {})
+    st.markdown(
+        "<div style='background:#12121a;border:1px solid " + _col + ";border-left:6px solid " + _col +
+        ";border-radius:8px;padding:10px 16px;margin-bottom:14px;font-family:JetBrains Mono,monospace'>"
+        "<div style='display:flex;justify-content:space-between;align-items:center'>"
+        "<span style='color:" + _col + ";font-size:13px;font-weight:700'>⚡ Navigated from: " + _lbl + "</span>"
+        "<span style='color:#8888a0;font-size:11px'>Pillar 1 — Health &amp; FTL</span></div>"
+        "<div style='color:#8888a0;font-size:10px;margin-top:4px'>Recent events: " + (_evs or "(none)") + "</div>"
+        "<div style='color:#8888a0;font-size:10px;margin-top:2px'>"
+        "Health: <b style='color:#e8e8f0'>" + str(round(_sm.get("health_score", 0), 1)) + "%</b> &nbsp;|"
+        " RUL: <b style='color:#e8e8f0'>" + str(_sm.get("rul_days", 0)) + " days</b> &nbsp;|"
+        " Bad blocks: <b style='color:#ef4444'>" + str(_sm.get("bad_blocks", 0)) + "</b>"
+        "</div></div>",
+        unsafe_allow_html=True)
+    if st.button("← Back to Simulation Controller", key="p1_back_sc"):
+        st.switch_page("pages/6_SimController.py")
+
+
 if 'sim' not in st.session_state:
     from core.ssd_simulator import SSDSimulator
     st.session_state['sim'] = SSDSimulator(preset='fresh')
@@ -163,21 +195,12 @@ _bb_crit_ref  = [80]
 
 # ── Initialize hardware session state BEFORE sidebar accesses it ──────────────
 from sections.section_hw_monitor import _init_hw_state  # type: ignore
+from core.shared_sidebar import render_sidebar
 _init_hw_state()
+render_sidebar('1')
 
 # ─── Sidebar ──────────────────────────────────────────────────────────────────
 with st.sidebar:
-    st.markdown("### 🔷 AURA")
-    st.page_link("app.py",             label="Home",                            icon="🏠")
-    st.page_link("pages/0_Manual.py",  label="📖 Quick Manual",                icon="📖")
-    st.page_link("pages/1_Pillar1.py", label="Pillar 1 — Health & Diagnostics", icon="🧠")
-    st.page_link("pages/2_Pillar2.py", label="Pillar 2 — NAND Block Mgmt",     icon="🗃️")
-    st.page_link("pages/3_Pillar3.py", label="Pillar 3 — ECC & Reliability",   icon="🛡️")
-    st.page_link("pages/4_Pillar4.py", label="Pillar 4 — Logic Optimization",  icon="⚙️")
-    st.divider()
-    st.caption("Pillar 1 commands Pillar 2 & 3.\nPillar 4 is build-time only.")
-    st.markdown("---")
-
     st.markdown("### 🎮 Simulation Controls")
     speed = st.select_slider("Speed", options=[1, 5, 20, 100], value=1, key="speed_sel_p1")
     st.session_state['speed_val'] = speed
@@ -238,10 +261,6 @@ with st.sidebar:
         for _ in range(speed):
             sim.tick(60.0)
         st.rerun()
-
-    # ── Hardware sidebar controls ──────────────────────────────────────────
-    from sections.section_hw_monitor import render_hw_sidebar  # type: ignore
-    render_hw_sidebar(_ecc_warn_ref, _bb_crit_ref)
 
     st.markdown("---")
     snap_sb = sim.get_latest_smart()

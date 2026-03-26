@@ -186,14 +186,10 @@ st.markdown(
     "<span style='color:#4a4a60'>■</span> Retired</div></div></div>",
     unsafe_allow_html=True)
 
+from core.shared_sidebar import render_sidebar
+render_sidebar('3')
+
 with st.sidebar:
-    st.markdown("### 🛡️ AURA Navigation")
-    st.page_link("app.py",             label="Home",     icon="🏠")
-    st.page_link("pages/0_Manual.py",  label="Manual",   icon="📖")
-    st.page_link("pages/1_Pillar1.py", label="Pillar 1", icon="🧠")
-    st.page_link("pages/2_Pillar2.py", label="Pillar 2", icon="🗃️")
-    st.page_link("pages/3_Pillar3.py", label="Pillar 3", icon="🛡️")
-    st.page_link("pages/4_Pillar4.py", label="Pillar 4", icon="⚙️")
     st.divider()
     if st.button("🔌 Cold Boot", key='cold_boot', use_container_width=True):
         cph = st.empty()
